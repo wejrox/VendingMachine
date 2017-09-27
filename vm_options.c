@@ -711,6 +711,7 @@ void addItem(VmSystem * system)
  **/
 void removeItem(VmSystem * system)
 {
+	int iVal;
 	char itemId[ID_LEN + NULL_SPACE];
 	Node * remove;
 	Boolean success = FALSE;
@@ -718,14 +719,27 @@ void removeItem(VmSystem * system)
 	while(!success)
 	{
 		printf("Enter the item id of the item to remove from the menu: ");
-		while(!getInput(itemId, ID_LEN))
-			printf("\nId length invalid, try again: ");
+		while(TRUE)
+		{
+			iVal = getInput(itemId, ID_LEN);
+			if(iVal == 0)
+				printf("Id length invalid, try again: ");
+			else if (iVal == -1)
+			{
+				printf("Cancelling item removal\n");
+				remove = NULL;
+				printf("Returning to main menu..\n");
+				return;
+			}
+			else 
+				break;
+		}
 		
 		remove = getNodeByID(system->itemList, itemId);
 
 		if(!remove)
 		{
-			printf("\nId entered does not exist.\n ");
+			printf("\nId entered does not exist.\n");
 			continue;
 		}
 

@@ -33,12 +33,17 @@ void readRestOfLine()
 int getInput(char * output, int size)
 {
 	char *buffer;
-	if(!(buffer = malloc(sizeof(char) * (size + NULL_SPACE) + 200)))
-		return 0;
+	if(!(buffer = malloc(sizeof(char) * (size + EXTRA_SPACES))))
+	{
+		fprintf(stderr, "Fatal error: malloc() failed in getInput()");
+		exit(EXIT_FAILURE);
+	}
+
 	/** Set colour to boldened white **/
 	printf(BOLDWHITE);
+
 	/** User input **/
-	if(!fgets(buffer, size + NULL_SPACE, stdin))
+	if(!fgets(buffer, size + EXTRA_SPACES, stdin))
 	{
 		if(buffer)
 			free(buffer);
@@ -47,13 +52,15 @@ int getInput(char * output, int size)
 		return 0;
 	}
 
+	/** Reset colour **/
+	printf(RESET);
+
 	/** Check length **/
-	if(buffer[strlen(buffer)] != '\n' && buffer[strlen(buffer)] != '\0')
+	if(buffer[strlen(buffer) - 1] != '\n')
 	{
+    	readRestOfLine();
 		if(buffer)
 			free(buffer);
-    	readRestOfLine();
-    	printf(RESET);
 		return 0;
 	}
 
@@ -61,19 +68,15 @@ int getInput(char * output, int size)
 	{
 		if(buffer)
 			free(buffer);
-		printf(RESET);
 		return -1;
 	}
 
 	strcpy(output, buffer);
 
 	/** Replace \n with \0 **/
-	output[strcspn(output, "\n")] = '\0';
+	output[strlen(output) - 1] = '\0';
 
 	free(buffer);
-
-	/** Reset the colour **/
-	printf(RESET);
 
 	return 1;
 }

@@ -165,7 +165,6 @@ void freeNode(List * list, Node * target)
 
 	current = list->head;
 
-	printf("Finding node\n");
 	/** Iterate through the array and find the node **/
 	for(i = 0; i < list->size; ++i)
 	{
@@ -173,7 +172,6 @@ void freeNode(List * list, Node * target)
 		 * Remove node if it's the one required, 
 		 * Set the previous node to point to the next node
 		 **/
-		printf("Comparing node %d\n", i);
 		if(strcmp(current->data->id, target->data->id) == 0)
 		{
 			/** 
