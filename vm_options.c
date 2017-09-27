@@ -447,7 +447,7 @@ void displayItems(VmSystem * system)
  **/
 void purchaseItem(VmSystem * system)
 {
-	int i;
+	int i, iVal;
 	char op[5 + NULL_SPACE];
 	char price[10];
 	Node * item;
@@ -467,8 +467,18 @@ void purchaseItem(VmSystem * system)
 	printf("--------------\n");
 	printf("Please enter the id of the item you wish to purchase: ");
 	
-	if(!getInput(op, sizeof(op)))
+	iVal = getInput(op, sizeof(op));
+	if(iVal == 0)
+	{
 		printf("Input entered is invalid, cancelling transaction.\n");
+		return;
+	}
+	else if (iVal == -1)
+	{
+		printf("Cancelling purchase\n");
+		printf("Returning to main menu..\n");
+		return;
+	}
 
 	/** Get the item with that id (if any) **/
 	item = getNodeByID(system->itemList, op);
@@ -506,8 +516,15 @@ void purchaseItem(VmSystem * system)
 		change = -1;
 		printf("You still need to give us %s:", price);
 		/** User input **/
-		if(!getInput(op, sizeof(op)))
+		iVal = getInput(op, sizeof(op));
+		if(iVal == 0)
 			printf("Error: '%s' is not a valid denomination of money.\n", op);
+		else if (iVal == -1)
+		{
+			printf("Cancelling purchase\n");
+			printf("Returning to main menu...\n");
+			return;
+		}
 
 		payment = atoi(op);
 		if(!isPaymentValid(payment))
@@ -567,7 +584,7 @@ void saveAndExit(VmSystem * system)
  **/
 void addItem(VmSystem * system)
 { 
-	int i;
+	int i, iVal;
 	Node *newItem;
 	Boolean priceValid = FALSE, dolExist = FALSE;
 	char price[10], tmp[10];
@@ -578,21 +595,63 @@ void addItem(VmSystem * system)
 	printf("This new meal item will have the Item id of %s.\n", newItem->data->id);
 
 	printf("Enter the item name: ");
-	while(!getInput(newItem->data->name, NAME_LEN))
-		printf("Name is invalid, must be less than %d characters.\n", \
-			NAME_LEN);
+	while(TRUE)
+	{
+		iVal = getInput(newItem->data->name, NAME_LEN);
+		if(iVal == 0)
+			printf("Name is invalid, must be less than %d characters.\n", \
+				NAME_LEN);
+		else if (iVal == -1)
+		{				
+			printf("Cancelling new item\n");
+			free(newItem->data);
+			free(newItem);
+			printf("Returning to main menu..\n");
+			return;
+		}
+		else
+			break;
+	}
 
 	printf("Enter the item description: ");
-	while(!getInput(newItem->data->desc, DESC_LEN))
-		printf("Description is invalid, must be less than %d characters.\n", \
-			DESC_LEN);
+	while(TRUE)
+	{
+		iVal = getInput(newItem->data->desc, DESC_LEN);
+		if(iVal == 0)
+			printf("Description is invalid, must be less than %d characters.\n", \
+				DESC_LEN);
+		else if (iVal == -1)
+		{
+			printf("Cancelling new item\n");
+			free(newItem->data);
+			free(newItem);
+			printf("Returning to main menu..\n");			
+			return;
+		}
+		else
+			break;
+	}
 
 	printf("Enter the price for this item: ");
 	while(!priceValid)
 	{
-		while(!getInput(price, sizeof(price)))
-			printf("\nPrice entered is invalid, must be less than 10 characters: ");
+		while(TRUE)
+		{
+			iVal = getInput(price, sizeof(price));
+			if(iVal == 0)
+				printf("\nPrice entered is invalid, must be less than 10 characters: ");
+			else if (iVal == -1)
+			{
+				printf("Cancelling new item\n");
+				free(newItem->data);
+				free(newItem);
 
+				printf("Returning to main menu..\n");
+				return;
+			}
+			else
+				break;
+		}
 		if(price[strlen(price) - 3] != '.')
 		{
 			printf("\nPrice entered is invalid, must be in form DOLLAR.CENTS: ");

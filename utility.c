@@ -28,6 +28,7 @@ void readRestOfLine()
 /** 
  * Gets input from the user of size given
  * consumes extra characters 
+ * Returns 0 on failure, 1 on success, -1 when cancelling input
  **/
 int getInput(char * output, int size)
 {
@@ -39,6 +40,8 @@ int getInput(char * output, int size)
 	/** User input **/
 	if(!fgets(buffer, size + NULL_SPACE, stdin))
 	{
+		if(buffer)
+			free(buffer);
 		readRestOfLine();
     	printf(RESET);
 		return 0;
@@ -47,9 +50,19 @@ int getInput(char * output, int size)
 	/** Check length **/
 	if(buffer[strlen(buffer)] != '\n' && buffer[strlen(buffer)] != '\0')
 	{
+		if(buffer)
+			free(buffer);
     	readRestOfLine();
     	printf(RESET);
 		return 0;
+	}
+
+	if(buffer[0] == '\n')
+	{
+		if(buffer)
+			free(buffer);
+		printf(RESET);
+		return -1;
 	}
 
 	strcpy(output, buffer);

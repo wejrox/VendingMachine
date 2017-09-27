@@ -1,37 +1,34 @@
-#! /bin/bash
-SOURCES="vm.c vm_menu.c vm_options.c vm_stock.c vm_coin.c utility.c"
-HEADERS="vm.h vm_menu.h vm_options.h vm_stock.h vm_coin.h utility.h vm_system.h"
-PROGRAM="vm"
-DEBUG="-g"
-FLAGS="-ansi -pedantic -Wall $DEBUG"
-USER="S3540510"
+SOURCES=vm.c vm_menu.c vm_options.c vm_stock.c vm_coin.c utility.c
+HEADERS=vm.h vm_menu.h vm_options.h vm_stock.h vm_coin.h utility.h vm_system.h
+OBJECTS=vm.o vm_menu.o vm_options.o vm_stock.o vm_coin.o utility.o
+PROGRAM=vm
+DEBUG=-g
+FLAGS=-ansi -pedantic -Wall $(DEBUG)
+USER=S3540510
 
-if [[ $1 == "-b" ]]
-then
-	gcc $FLAGS -o $PROGRAM $SOURCES
-elif [[ $1 == "-e" ]]
-then
-	./$PROGRAM stock.dat coins.dat
-elif [[ $1 == "-be" ]]
-then
-	gcc $FLAGS -o $PROGRAM $SOURCES
-	./$PROGRAM stock.dat coins.dat
-elif [[ $1 == "-v" ]]
-then
-	valgrind --leak-check=full --track-origins=yes -v ./vm stock.dat coins.dat
-elif [[ $1 == "-g" ]]
-then
-	gdb --args vm stock.dat coins.dat
-elif [[ $1 == "-clean" ]]
-then
-	rm $PROGRAM
-elif [[ $1 == "-f" ]]
-then
-	zip $USER-a2 $SOURCES $HEADERS Makefile
-else
-	echo "No arguments specified."
-	echo "-b = Build               | -e = Execute           | -be = Build and Execute"
-	echo "-v = Valgrind Leak-Check | -g = GDB Check"
-	echo "-clean = Cleanup         | -f = Final Compression"
-	exit
-fi
+all: $(OBJECTS)
+	gcc $(FLAGS) -o $(PROGRAM) $(OBJECTS)
+
+vm.o: vm.c vm.h vm_menu.h vm_options.h vm_stock.h vm_coin.h vm_system.h utility.h
+	gcc $(FLAGS) -c vm.c
+
+vm_menu.o: vm_menu.c vm_menu.h vm_options.h vm_stock.h vm_coin.h vm_system.h utility.h
+	gcc $(FLAGS) -c vm_menu.c
+
+vm_options.o: vm_options.c vm_options.h vm_stock.h vm_coin.h vm_system.h utility.h
+	gcc $(FLAGS) -c vm_options.c
+
+vm_stock.o: vm_stock.c vm_stock.h vm_coin.h vm_system.h utility.h
+	gcc $(FLAGS) -c vm_stock.c
+
+vm_coin.o: vm_coin.c vm_coin.h vm_system.h utility.h
+	gcc $(FLAGS) -c vm_coin.c
+
+vm_utility.o: utility.c utility.h
+	gcc $(FLAGS) -c utility.c
+
+clean:
+	rm -f *.o $(PROGRAM)
+
+archive:
+	zip $(USER)-a2 $(SOURCES) $(HEADERS) Makefile

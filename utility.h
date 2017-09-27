@@ -45,7 +45,7 @@ typedef enum boolean
  * Call this function whenever you detect buffer overflow.
  **/
 void readRestOfLine();
-Boolean getInput(char * output, int size);
+int getInput(char * output, int size);
 Boolean parseLong(const char * str, long * val);
 Boolean parseUInt(const char * str, unsigned int * val);
 char** GetFileContents(const char * fname);
