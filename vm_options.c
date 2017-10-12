@@ -90,10 +90,11 @@ Boolean loadStock(VmSystem * system, const char * fileName)
 	/** Set array size **/
 	tokenisedData = malloc((arrElements + NULL_SPACE) * sizeof(char*));
 
-	if(stockCount == 0)
+	/** Exit if no stock or too much on one line **/
+	if(stockCount == 0 || strlen(fileContents[0]) > DESC_LEN)
 	{
 		freeStringArray(fileContents);
-		freeStringArray(tokenisedData);
+		free(tokenisedData);
 		free(newNode);
 		return FALSE;
 	}
@@ -110,7 +111,7 @@ Boolean loadStock(VmSystem * system, const char * fileName)
 		if(delCount != delReq)
 		{
 			freeStringArray(fileContents);
-			freeStringArray(tokenisedData);
+			free(tokenisedData);
 			free(newNode);
 			return FALSE;
 		}
@@ -149,7 +150,7 @@ Boolean loadStock(VmSystem * system, const char * fileName)
 		if(eolCount != arrElements)
 		{
 			freeStringArray(fileContents);
-			freeStringArray(tokenisedData);
+			free(tokenisedData);
 			free(newNode);
 			return FALSE;
 		}
@@ -163,7 +164,7 @@ Boolean loadStock(VmSystem * system, const char * fileName)
 			strlen(tokenisedData[5]) > 9)
 		{
 			freeStringArray(fileContents);
-			freeStringArray(tokenisedData);
+			free(tokenisedData);
 			free(newNode);
 			return FALSE;
 		}
@@ -669,8 +670,6 @@ void addItem(VmSystem * system)
 			continue;
 		}
 
-		newItem->data->price.cents = atoi(tmp);
-
 		/** Validate dollars (remove cents then try atoi) **/
 		price[strlen(price) - 3] = '\0';
 
@@ -686,7 +685,9 @@ void addItem(VmSystem * system)
 			continue;
 		}
 
+		/** Set price **/
 		newItem->data->price.dollars = atoi(price);
+		newItem->data->price.cents = atoi(tmp);
 
 		priceValid = TRUE;
 	}

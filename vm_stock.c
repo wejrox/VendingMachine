@@ -86,7 +86,7 @@ void pushNode(List * list, Node * newNode)
 {
 	newNode->next = list->head;
 	list->head = newNode;
-	++list->size;
+	list->size += 1;
 }
 
 /** 
@@ -231,7 +231,7 @@ int getListLength(List * list)
 void sortStock(List * list)
 {
 	/** Counter **/
-	int i;
+	int i, y;
 	/** Where will this node go in the array? **/
 	int posInList;
 
@@ -241,17 +241,22 @@ void sortStock(List * list)
 	sortedArray = malloc(sizeof(int *) * list->size);
 	target = list->head;
 
-	/** Compare until nothing left **/
-	while (target)
+	/** Compare every node in the list **/
+	for(y = 0; y < list->size; ++y)
 	{
+
 		posInList = 0;
 		for(i = 0; i < list->size; ++i)
+		{
 			if(cmpNode(target, getNodeByPos(list, i)) > 0)
 				++posInList;
+		}
 
 		/** Move the target into its position on the list **/
 		sortedArray[posInList] = target;
+
 		target = target->next;
+
 	}
 	
 	/** Update pointers in array **/
@@ -277,6 +282,10 @@ void sortStock(List * list)
 int cmpNode(Node * first, Node * second)
 {
 	int i, str1Length, str2Length, minLength;
+
+	if(!first || !second)
+		return -1;
+
 	str1Length = strlen(first->data->name);
 	str2Length = strlen(second->data->name);
 
@@ -292,9 +301,9 @@ int cmpNode(Node * first, Node * second)
 	/** Compare each character **/
 	for(i = 0; i < minLength; ++i)
 	{
-		if(first->data->name[i] > second->data->name[i])
+		if(tolower(first->data->name[i]) > tolower(second->data->name[i]))
 			return 1;
-		else if(first->data->name[i] < second->data->name[i])
+		else if(tolower(first->data->name[i]) < tolower(second->data->name[i]))
 			return -1;
 	}
 

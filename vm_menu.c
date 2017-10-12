@@ -54,10 +54,9 @@ MenuFunction getMenuChoice(MenuItem * menu)
 	char buffer[1 + NULL_SPACE];
 	long op;
 
-	printf(BOLDWHITE);
-	fgets(buffer, sizeof(buffer), stdin);
-	printf(RESET);
-	readRestOfLine();
+	/** Input is invalid **/
+	if(getInput(buffer, sizeof(buffer)) == 0)
+		return NULL;
 	
 	/** Parse check **/
 	if(!parseLong(buffer, &op))
@@ -67,11 +66,6 @@ MenuFunction getMenuChoice(MenuItem * menu)
 		return NULL;
 
 	return menu[op - 1].function;
-	if(menu->function)
-		return *menu->function;
-
-
-    return NULL;
 }
 
 void printMenu(MenuItem * menu)

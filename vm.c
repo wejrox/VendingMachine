@@ -27,20 +27,20 @@ int main(int argc, char ** argv)
 	{
 		/** Exit when no arguments presented **/
 		case 1:
-			printf("No files given for data. Exiting...\n");
+			printf("No files given for data.\n");
 			abortProgram(system);
 		break;
 		/** Validate both stock and coin list **/
 		case 3:
 			if(!loadData(system, argv[1], argv[2]))
 			{
-				printf("Error parsing data files. Exiting...\n");
+				printf("Error parsing data files.\n");
 				abortProgram(system);
 			}
 		break;
 		/** Abort if too many options have been given **/
 		default:
-			printf("Too many command line arguments specified. Exiting...");
+			printf("Too many command line arguments specified.\n");
 			abortProgram(system);
 		break;
 	}

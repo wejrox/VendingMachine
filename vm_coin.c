@@ -108,18 +108,23 @@ int convertCoinToDenom(int coin)
  **/
 void textFormatPrice(char * price, int dollars, int cents)
 {
-	char tmp[50];
+	char tmpDollars[50];
+	char tmpCents[50];
 	/** Format the price **/
 	strcpy(price, "$ ");
-	sprintf(tmp, "%d", dollars);
-	strcat(price, tmp);
+	sprintf(tmpDollars, "%d", dollars);
+	strcat(price, tmpDollars);
 	strcat(price, ".");
-	if(cents != 0)
-		sprintf(tmp, "%d", cents);
-	else
-		sprintf(tmp, "%s", "00");
 
-	strcat(price, tmp);
+	/** Calculate cents **/
+	if(cents == 5)
+		sprintf(tmpCents, "%s", "05");
+	else if(cents != 0)
+		sprintf(tmpCents, "%d", cents);
+	else
+		sprintf(tmpCents, "%s", "00");
+
+	strcat(price, tmpCents);
 }
 
 /**
@@ -128,7 +133,7 @@ void textFormatPrice(char * price, int dollars, int cents)
 void printChange(Coin * coins)
 {
 	int i, j;
-	/** Print coins given **/
+	/** Print coins returning **/
 	for(i = 0; i < NUM_DENOMS; ++i)
 	{
 		if(coins[i].count > 0)
@@ -147,10 +152,9 @@ void printChange(Coin * coins)
 					case FIVE_CENTS: printf("5c "); break;
 				}
 			}
-
-			printf("\n");
 		}
 	}
+	printf("\n");
 }
 
 /**
@@ -174,21 +178,8 @@ void handlePartPayment(int * remaining, int payment, char * price)
 
 	/** Get dollars and cents **/
 	dollars = *remaining / 100;
-	sprintf(sCents, "%d", *remaining);
-
-	/** 
-	 * If only 5 cents left then cents must be 5 
-	 * (Will segfault if check isn't there)
-	 * Get last 2 characters of the string for cents  
-	 * second last * 10 + last
-	 **/
-	if(*remaining == 5)
-		cents = 05;
-	else
-	{
-		cents = (atoi(&sCents[strlen(sCents) - 2]));
-		cents += atoi(&sCents[strlen(sCents) - 1]);
-	}
+	sprintf(sCents, "%d", *remaining % 100);
+	cents = atoi(sCents);
 
 	/** Set the new price remaining text **/
 	textFormatPrice(price, dollars, cents);
@@ -270,9 +261,8 @@ Boolean calculateChange(int change, Coin * coinsGiven, VmSystem * system, Node *
 
 	if(hasChange)
 	{
-		printf("Thank you. Here is your %s, and your change of $%d.%d%d: ",\
-				item->data->name, tmpChange / 100, tmpChange % 100, \
-				tmpChange % 10);
+		printf("Thank you. Here is your %s, and your change of $%d.%d: ",\
+				item->data->name, tmpChange / 100, tmpChange % 100);
 
 		printChange(changeDenoms);
 		
